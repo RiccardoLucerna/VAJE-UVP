@@ -23,7 +23,22 @@
 #     >>> cik_cak('Attack at dawn!')
 #     ('A...C...D...', '.T.A.K.T.A.N', '..T...A...W.')
 # =============================================================================
-
+def cik_cak(niz):
+    '''Niz spremenimo v trtvrstični zapis CikCak'''
+    perioda = [0, 1, 2, 1] # kako se izmenjujejo nizi, kamor
+                           # zapišemo znak: prva, druga, tretja, druga, prva, druga, tretja, druga ...
+    niz = niz.upper()
+    vrste = ['', '', '']  # vrstice bodo na začetku seznami, da jih lahko spreminjamo!
+    stevec = 0 # kateri znak jemljemo 
+    for znak in niz:
+        if not 'A' <= znak <= 'Z': # če ne gre za znak angleške abecede
+            continue
+        pos = perioda[stevec % 4] # kam bomo napisali znak
+        vrste[pos] += znak
+        vrste[(pos+1)%3] += '.'
+        vrste[(pos+2)%3] += '.'
+        stevec += 1
+    return tuple(vrste) # vrniti moramo trojico!
 # =====================================================================@001493=
 # 2. podnaloga
 # Zašifrirano besedilo dobi tako, da najprej prepiše vse znake iz prve
@@ -35,7 +50,14 @@
 #     >>> cik_cak_sifra('Attack at dawn!')
 #     'ACDTAKTANTAW'
 # =============================================================================
-
+def cik_cak_sifra(s):
+    '''Zašifrirajmo besedilo'''
+    prva, druga, tretja = cik_cak(s) # najprej zapišemo cik-cak
+    sifra = ''
+    for znak in prva + druga + tretja: # gremo preko vseh treh vrstic
+        if znak != '.': # spustimo pike
+            sifra += znak
+    return sifra
 # =====================================================================@001494=
 # 3. podnaloga
 # Klodovik se zelo razjezi, ko dobi elektronsko pošto v takšni obliki:
@@ -62,7 +84,20 @@
 #     >>> razrez('   Kakšen\t pastir, \n\ntakšna  čreda. ')
 #     ['Kakšen', 'pastir,', 'takšna', 'čreda.']
 # =============================================================================
-
+def razrez(s):
+    '''Niz s razreže na podnize, ki jih ločijo "beli" presledki'''
+    seznam = []
+    beseda = '' # trenutna beseda, ki jo sestavljamo
+    for znak in s:
+        if znak in ' \n\t':  # znak ni del besede
+            if len(beseda) > 0: # če je ta znak zaključil besedo, jo dodamo v seznam
+                seznam.append(beseda)
+            beseda = '' # in nato bomo začeli sestavljati novo
+        else:
+            beseda += znak # smo "znotraj" besede
+    if len(beseda) > 0: # ne pozabimo na morebitno besedo na koncu!
+        seznam.append(beseda)
+    return seznam
 # =====================================================================@001495=
 # 4. podnaloga
 # Sedaj, ko že imate funkcijo `razrez`, bo lažje napisati tisto funckijo, ki
@@ -90,7 +125,19 @@
 #     pa je oblačno in
 #     temno, žita ne bo.
 # =============================================================================
-
+def olepsanoBesedilo(s, sir):
+    '''olepša besedilo do največje širine sir'''
+    besedilo = '' #končno besedilo
+    besede = razrez(s) # razrežemo na posamezne besede
+    vrstica = ''
+    for b in besede:
+        if len(vrstica) + len(b) > sir: # če je beseda, ki je na vrsti, predolga
+            besedilo += vrstica[:-1] + '\n' # odrežemo presledek, ki smo ga dodali za stikanje
+            vrstica = '' # začnemo novo vrstico
+        vrstica += b + ' '
+    if len(vrstica) > 0: # ne pozabimo na zadnjo vrstico!
+        besedilo += vrstica[:-1] + '\n'
+    return besedilo[:-1] # na koncu je odvečni prehod v novo vrsto
 
 
 

@@ -46,7 +46,20 @@
 # _Opomba_: Kot je za Python običajno, se stolpci in vrstice začnejo
 # številčiti pri 0.
 # =============================================================================
-
+def zivi(svet, i, j):
+    '''Koliko živih sosedov ima celica (i,j) '''
+    n, m = len(svet), len(svet[0]) # dimenzije sveta
+    stej = 0
+    for vrst in range(i-1, i+2):
+        for stol in range(j-1, j+2):
+            if (vrst == i) and (stol == j): # sama sebi ni sosed
+                continue
+            if (vrst < 0) or (vrst > n-1) or (stol < 0) or (stol > m-1):
+                # smo izven sveta
+                continue
+            if svet[vrst][stol] : # živ sosed!
+                stej += 1 
+    return stej
 # =====================================================================@027814=
 # 2. podnaloga
 # Napišite funkcijo `igra(svet)`, ki sestavi in vrne matriko, ki
@@ -63,7 +76,17 @@
 #      [False, False, False, False, False, False],
 #      [False, False, False, False, False, False]]
 # =============================================================================
-
+def igra(svet):
+    '''vrne nov svet po enem koraku'''
+    n, m = len(svet), len(svet[0])
+    novSvet = []
+    for i in range(n): # po vrsticah
+        novaVr = []
+        for j in range(m): # po stolpcih
+            novaVr.append(zivi(svet, i, j) == 3 or # celica ima tri žive sosede
+                           (zivi(svet, i, j) == 2 and svet[i][j])) # ali pa 2 in je ona živa
+        novSvet.append(novaVr)
+    return novSvet
 # =====================================================================@027815=
 # 3. podnaloga
 # Napišite funkcijo `populacija(svet, n)`, ki naredi `n` korakov igre
@@ -96,7 +119,25 @@
 # _Nasvet_: Najprej napišite pomožno funkcijo, ki prešteje število živih
 # celic v matriki.
 # =============================================================================
+def koliko_zivih(svet):
+    '''Koliko je v svetu živih celic'''
+    n, m = len(svet), len(svet[0])
+    koliko = 0
+    for i in range(n): # po vrsticah
+        novaVr = []
+        for j in range(m): # po stolpcih
+            if svet[i][j] : # živa celica!
+                koliko += 1
+    return koliko
 
+
+def populacija(svet, n):
+    '''Kako se v n korakih spreminja populacija živih celic'''
+    ret = [koliko_zivih(svet)] # stanje na začetku
+    for i in range(n): # koliko korakov
+        svet = igra(svet) # nov svet
+        ret.append(koliko_zivih(svet)) # dodamo število živih
+    return ret
 
 
 

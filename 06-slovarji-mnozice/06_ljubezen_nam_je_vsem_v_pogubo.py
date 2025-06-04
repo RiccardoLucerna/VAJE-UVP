@@ -27,7 +27,7 @@ def narcisoidi(slo):
 # Sestavite funkcijo `ljubljeni`, ki sprejme slovar zaljubljenih in vrne
 # _množico_ tistih, ki so ljubljeni.
 # =============================================================================
-def ljubljen(zaljubljeni):
+def ljubljeni(zaljubljeni):
     return {ljubljen for oseba in zaljubljeni
             for ljubljen in zaljubljeni[oseba]}
 # =====================================================================@001386=
