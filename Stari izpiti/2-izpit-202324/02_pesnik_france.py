@@ -22,7 +22,26 @@
 # 
 # naj funkcija vrne 5. Vsi komentarji se začnejo z znakom `#`.
 # =============================================================================
+def prestej_vrstice(datoteka):
+    count = 0
+    with open(datoteka, encoding='utf-8') as dat:
+        for vrstica in dat:
 
+            # Remove leading/trailing whitespace
+            stripped = vrstica.strip()
+            
+            # Skip empty lines
+            if not stripped:
+                continue
+            
+            # Skip lines that start with # (comments)
+            if stripped.startswith('#'):
+                continue
+            
+            # Count all other lines
+            count += 1
+    
+    return count
 # =====================================================================@040209=
 # 2. podnaloga
 # France ne razume dobro razlike med `print` in `return`.
@@ -36,7 +55,9 @@
 #             print('France', 'Pesnik', file=f)             print('France', 'Pesnik', file=f)
 #         print(True)                                   return True
 # =============================================================================
-
+def odstrani_printe(slaba, popravljena):
+    with open(slaba, 'r', encoding='utf-8') as slaba_datoteka:
+        return None
 # =====================================================================@040210=
 # 3. podnaloga
 # France še ni odkril, da lahko npr. namesto `x = x + 2` napiše `x += 2`.

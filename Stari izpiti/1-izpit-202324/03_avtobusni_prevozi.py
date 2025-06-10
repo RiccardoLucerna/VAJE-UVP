@@ -37,7 +37,25 @@
 #      '1A': ['Park', 'Trg', 'Gledalisce'],
 #      '2': ['Trgovina', 'Muzej', 'Sola', 'Gledalisce']}
 # =============================================================================
+def linije(datoteka):
+    slo = {}
+    with open(datoteka, encoding='utf-8') as dat:
+        trenutna_linija = None
+        
+        for vrstica in dat:
+            vrstica = vrstica.strip()
+            
+            if not vrstica:
+                continue
+            
+            elif vrstica[0].isdigit():
+                trenutna_linija = vrstica
+                slo[trenutna_linija] = []
+            
+            else:
+                slo[trenutna_linija].append(vrstica)
 
+    return slo
 # =====================================================================@040195=
 # 2. podnaloga
 # Podatki v vhodni datoteki so nekoliko nepregledni. Sestavite funkcijo `pregledno`,
@@ -57,7 +75,13 @@
 #     1A: Park -> Trg -> Gledalisce
 #     2: Trgovina -> Muzej -> Sola -> Gledalisce
 # =============================================================================
-
+def pregledno(slovar, ime_datoteke):
+    with open(ime_datoteke, 'w', encoding='utf-8') as datoteka:
+        for linija in slovar.keys():
+            postaje = slovar[linija]
+            # Format the line with arrow separators
+            vrstica = f"{linija}: {' -> '.join(postaje)}\n"
+            datoteka.write(vrstica)
 # =====================================================================@040196=
 # 3. podnaloga
 # Sestavite funkcijo `obstaja_povezava`, ki sprejme slovar linij, začetno ter 
@@ -72,7 +96,50 @@
 #     >>> obstaja_povezava(slovar, 'Trg', 'Aaaaaa')
 #     None
 # =============================================================================
+def obstaja_povezava(slovar, zacetna, koncna):
+    # Check if either station doesn't exist
+    all_stations = set()
+    for stations in slovar.values():
+        all_stations.update(stations)
+    
+    if zacetna not in all_stations or koncna not in all_stations:
+        return None
 
+    # Check for direct connection
+    for line, stations in slovar.items():
+        if zacetna in stations and koncna in stations:
+            if stations.index(zacetna) < stations.index(koncna):
+                return True
+
+    # Check for connections with one transfer
+    transfer_stations = set()
+    
+    # Find all lines that contain the starting station
+    start_lines = []
+    for line, stations in slovar.items():
+        if zacetna in stations:
+            start_lines.append((line, stations))
+    
+    # Find all lines that contain the ending station
+    end_lines = []
+    for line, stations in slovar.items():
+        if koncna in stations:
+            end_lines.append((line, stations))
+    
+    # Check all possible transfer points
+    for s_line, s_stations in start_lines:
+        for e_line, e_stations in end_lines:
+            if s_line == e_line:
+                continue  # Already checked direct connections
+            
+            # Find common stations (potential transfer points)
+            common = set(s_stations) & set(e_stations)
+            for transfer in common:
+                if (s_stations.index(zacetna) < s_stations.index(transfer) and 
+                   e_stations.index(transfer) < e_stations.index(koncna)):
+                    return True
+
+    return False
 
 
 

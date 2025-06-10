@@ -17,7 +17,25 @@
 # 
 # velja, da je `dolzine_kitic(pesem1) == [2, 2]` in `dolzine_kitic(pesem2) == [4]`.
 # =============================================================================
-
+def dolzine_kitic(pesem):
+    # Split the poem into stanzas (separated by empty lines)
+    stanzas = []
+    current_stanza = []
+    
+    for line in pesem.split('\n'):
+        stripped_line = line.strip()
+        if stripped_line:  # If line is not empty
+            current_stanza.append(stripped_line)
+        elif current_stanza:  # If we hit an empty line and have a current stanza
+            stanzas.append(current_stanza)
+            current_stanza = []
+    
+    # Add the last stanza if there's any
+    if current_stanza:
+        stanzas.append(current_stanza)
+    
+    # Return the lengths of each stanza
+    return [len(stanza) for stanza in stanzas]
 # =====================================================================@040224=
 # 2. podnaloga
 # Veliko pesmi ima predpisano število zlogov v verzu. Napiši funkcijo
@@ -32,7 +50,34 @@
 #     >>> stevilo_zlogov("Jaz sem hrast")
 #     [1, 1, 1]
 # =============================================================================
-
+def stevilo_zlogov(verz):
+    samoglasnik = {'a', 'e', 'i', 'o', 'u'}
+    soglasnik = {'b', 'c', 'č', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 
+                 'n', 'p', 'r', 's', 'š', 't', 'v', 'z', 'ž'}
+    
+    sez = []
+    for beseda in verz.split():
+        # ignorirajte enočrkovne besede
+        if len(beseda) <= 1:
+            continue
+        
+        count = 0
+        beseda = beseda.lower()  # imam tako definirane crke
+        for i, crka in enumerate(beseda):
+            # prestej samoglasnike
+            if crka in samoglasnik:
+                count += 1
+            # prestej 'r' ki ne stojijo ob soglasniku
+            elif crka == 'r':
+                prejsnji = beseda[i-1] in soglasnik if i > 0 else False
+                naslednji = beseda[i+1] in soglasnik if i < len(beseda)-1 else False
+                if not (prejsnji and naslednji):
+                    count += 1
+        
+        if count > 0:
+            sez.append(count)
+    
+    return sez
 # =====================================================================@040226=
 # 3. podnaloga
 # Veliko pesmi ima predpisan tudi ritem, torej morajo biti poudarjeni zlogi
