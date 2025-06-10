@@ -96,50 +96,30 @@ def pregledno(slovar, ime_datoteke):
 #     >>> obstaja_povezava(slovar, 'Trg', 'Aaaaaa')
 #     None
 # =============================================================================
-def obstaja_povezava(slovar, zacetna, koncna):
-    # Check if either station doesn't exist
-    all_stations = set()
-    for stations in slovar.values():
-        all_stations.update(stations)
-    
-    if zacetna not in all_stations or koncna not in all_stations:
+def obstaja_povezava(slovar, zac, konc):
+    # Preverimo, ali sta obe postaji v vsaj eni liniji
+    vse_postaje = set()
+    for postaje in slovar.values():
+        vse_postaje.update(postaje)
+    if zac not in vse_postaje or konc not in vse_postaje:
         return None
 
-    # Check for direct connection
-    for line, stations in slovar.items():
-        if zacetna in stations and koncna in stations:
-            if stations.index(zacetna) < stations.index(koncna):
-                return True
+    # Neposredna povezava (ni prestopov)
+    for postaje in slovar.values():
+        if zac in postaje and konc in postaje:
+            return True
 
-    # Check for connections with one transfer
-    transfer_stations = set()
-    
-    # Find all lines that contain the starting station
-    start_lines = []
-    for line, stations in slovar.items():
-        if zacetna in stations:
-            start_lines.append((line, stations))
-    
-    # Find all lines that contain the ending station
-    end_lines = []
-    for line, stations in slovar.items():
-        if koncna in stations:
-            end_lines.append((line, stations))
-    
-    # Check all possible transfer points
-    for s_line, s_stations in start_lines:
-        for e_line, e_stations in end_lines:
-            if s_line == e_line:
-                continue  # Already checked direct connections
-            
-            # Find common stations (potential transfer points)
-            common = set(s_stations) & set(e_stations)
-            for transfer in common:
-                if (s_stations.index(zacetna) < s_stations.index(transfer) and 
-                   e_stations.index(transfer) < e_stations.index(koncna)):
-                    return True
+    # Povezava z enim prestopom
+    for postaje1 in slovar.values():
+        if zac in postaje1:
+            for postaje2 in slovar.values():
+                if konc in postaje2 and postaje1 != postaje2:
+                    # Iščemo skupno postajo (možen prestop)
+                    if set(postaje1) & set(postaje2):
+                        return True
 
     return False
+
 
 
 

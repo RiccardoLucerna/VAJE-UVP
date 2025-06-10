@@ -56,8 +56,23 @@ def prestej_vrstice(datoteka):
 #         print(True)                                   return True
 # =============================================================================
 def odstrani_printe(slaba, popravljena):
-    with open(slaba, 'r', encoding='utf-8') as slaba_datoteka:
-        return None
+    with open(slaba, 'r') as f:
+        vrstice = f.readlines()
+
+    popravljene_vrstice = []
+    for vrstica in vrstice:
+        vrstica_strip = vrstica.strip()
+        if vrstica_strip.startswith('print(') and 'file=' not in vrstica:
+            # Izlušči argument iz print in nadomesti z return
+            vsebina = vrstica_strip[6:-1]  # odstrani print( in )
+            popravljena_vrstica = ' ' * (len(vrstica) - len(vrstica.lstrip())) + 'return ' + vsebina + '\n'
+            popravljene_vrstice.append(popravljena_vrstica)
+        else:
+            popravljene_vrstice.append(vrstica)
+
+    with open(popravljena, 'w') as f:
+        f.writelines(popravljene_vrstice)
+
 # =====================================================================@040210=
 # 3. podnaloga
 # France še ni odkril, da lahko npr. namesto `x = x + 2` napiše `x += 2`.
@@ -74,7 +89,32 @@ def odstrani_printe(slaba, popravljena):
 # Privzameš lahko, da France sešteva/odšteva le naravna števila in so imena 
 # spremenljivk iz malih angleških črk ter podčrtajev (npr. `novi_stevec`).
 # =============================================================================
+import re
 
+def poenostavi(slaba, popravljena):
+    with open(slaba, 'r') as f:
+        vrstice = f.readlines()
+
+    popravljene_vrstice = []
+    vzorec = re.compile(r'^(\s*)([a-z_][a-z_0-9]*)\s*=\s*\2\s*([\+\-])\s*(\d+)\s*$')
+    vzorec_2 = re.compile(r'^(\s*)([a-z_][a-z_0-9]*)\s*=\s*(\d+)\s*([\+\-])\s*\2\s*$')
+
+    for vrstica in vrstice:
+        ujemanje = vzorec.match(vrstica)
+        ujemanje_2 = vzorec_2.match(vrstica)
+        if ujemanje:
+            zamik, spremenljivka, operator, stevilo = ujemanje.groups()
+            nova_vrstica = f"{zamik}{spremenljivka} {operator}= {stevilo}\n"
+            popravljene_vrstice.append(nova_vrstica)
+        elif ujemanje_2:
+            zamik, spremenljivka, stevilo, operator = ujemanje_2.groups()
+            nova_vrstica = f"{zamik}{spremenljivka} {operator}= {stevilo}\n"
+            popravljene_vrstice.append(nova_vrstica)
+        else:
+            popravljene_vrstice.append(vrstica)
+
+    with open(popravljena, 'w') as f:
+        f.writelines(popravljene_vrstice)
 
 
 
